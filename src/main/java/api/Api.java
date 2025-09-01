@@ -4,17 +4,22 @@ import java.util.List;
 import infrastructure.DictSecretWords;
 import domain.Service;
 import domain.Attempt;
+import domain.AttemptResoult;
+import domain.Code;
 
 public class Api {	
 	Attempt attempt;
-	//DictSecretWords dictSecretWords = new DictSecretWords();
 	Service service;
 	String hiddenWord;
 	Receiver receiver;
 	Sender sender;
 	Message message;
-	public static final int MAXATTEMPTS = 6;
+	AttemptResoult attemptResoult;
 	public static boolean stopped = false;
+	private final String YES = "да";
+	private final String NO = "нет";
+	private final String POINT_SPACE = ". ";
+	private final String DUOPOINT_SPACE = ": ";
 	
 	public Api(Service service, Receiver receiver, Sender sender, Message message){
 		this.service = service;
@@ -25,28 +30,42 @@ public class Api {
 	}
 	public void oneCycleGame() {
 		sender.send(Message.HELLO);
-		if (receiver.getTxt().equals("да")) {
+		if (receiver.getTxt().equals(YES)) {
 			do {
 				stopped = false;
 				hiddenWord = service.getHiddenWord();
-				for (int i = 0; i < MAXATTEMPTS; i++) {
-					attempt = new Attempt(receiver.getTxt());//так можно получается?
-					if (!attempt.validAttempt()) {
+				while (service.contin()) {
+					sender.sendt(service.getCnt());
+					sender.sendt(POINT_SPACE);
+					attempt = new Attempt(receiver.getTxt());
+					attemptResoult = service.attemptResoult(hiddenWord, attempt);
+					if(attemptResoult.getStatusCode().equals(Code.valueOf("ERR_ATTEMPT"))){
 						sender.send(Message.ERRATTEMPT);
+						service.cntAttempt(Code.valueOf("ERR_ATTEMPT"));
 						continue;
-					}
-					if (service.isTrueWord(hiddenWord, attempt.attempt)) {
+					}else if(attemptResoult.getStatusCode().equals(Code.valueOf("NO_EX_WORD"))){
+						sender.send(Message.NO_EX_WORD);
+						service.cntAttempt(Code.valueOf("NO_EX_WORD"));
+						continue;
+					}else if(attemptResoult.getStatusCode().equals(Code.valueOf("WIN_ATTEMPT"))){
 						sender.send(Message.WIN);
+						service.cntAttempt(Code.valueOf("WIN_ATTEMPT"));
+						service.addWordsAttempts(attempt, attemptResoult);
 						break;
-					} else {
-						sender.send(service.checkAttempt(hiddenWord, attempt.attempt));
+					}else if(attemptResoult.getStatusCode().equals(Code.valueOf("COR_ATTEMPT"))){
+						sender.send(attemptResoult.getAttemptResoult());
+						service.cntAttempt(Code.valueOf("COR_ATTEMPT"));
+						service.addWordsAttempts(attempt, attemptResoult);
 					}
 				}
 				if (!service.isTrueWord(hiddenWord, attempt.attempt)) {
-					sender.send(Message.LOSE + ": " + hiddenWord);
+					sender.sendt(Message.LOSE);
+					sender.sendt(DUOPOINT_SPACE);
+					sender.send(hiddenWord);
+					service.cntAttempt(Code.valueOf("END_GAME"));
 				}
 				sender.send(Message.START);
-				if (!receiver.getTxt().equals("да")) {
+				if (!receiver.getTxt().equals(YES)) {
 					stopped = true;
 				}
 			} while (!stopped);

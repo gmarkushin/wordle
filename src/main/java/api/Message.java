@@ -11,4 +11,5 @@ public class Message {
 	public static final String ATTEPMT = "Введите слово";
 	public static final String END = "Конец";
 	public static final String ERRATTEMPT = "Введённое слово некорректно";
+	public static final String NO_EX_WORD = "Я не знаю такого слова";
 }

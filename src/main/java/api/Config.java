@@ -20,15 +20,11 @@ public class Config {
 		return new Receiver();
 	}
 	
-	public Message message(){
+	public Message getMmessage(){
 		return new Message();
 	}
 	
 	public Api getApi(){
-		return new Api(getService(), getReceiver(), getSender(), message());
-	}
-	
-	public Config(){
-		getApi();
+		return new Api(getService(), getReceiver(), getSender(), getMmessage());
 	}
 }
