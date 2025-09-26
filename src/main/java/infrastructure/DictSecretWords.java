@@ -1,23 +1,22 @@
 package infrastructure;
 
+import domain.Infra;
+
 import java.util.List;
 import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.List;
-import java.nio.charset.Charset;
 import java.io.FileInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.Random;
 
-public class DictSecretWords {
+public class DictSecretWords implements Infra {
 	List<String> words;
 	private Random random = new Random();
 	static final String DICT_SECRET_PATH = "src/main/resources/dict.txt";
 	static final String DICT_PATH = "src/main/resources/dictAll.txt";
-	public List<String>  getWords(String path){
+
+    public List<String> getWords(String path){
 		try (BufferedReader reader = new BufferedReader(new BufferedReader(new InputStreamReader(new FileInputStream(path), StandardCharsets.UTF_8)))){
 			List<String> words = new ArrayList<>();
 			String str;
