@@ -25,6 +25,6 @@ public class Config {
 	}
 	
 	public Api getApi(){
-		return new Api(getService(), getReceiver(), getSender(), getMmessage());
+		return new Api(getService(), getReceiver(), getSender());
 	}
 }

@@ -1,14 +1,6 @@
 package domain;
 
-import java.util.List;
-import java.util.Random;
-import java.util.ArrayList;
-import infrastructure.DictSecretWords;
-
 public class Service {
-    private Random random = new Random();
-    private DictSecretWords dictSecretWords;
-	private int cnt = 1;
 	private final char LET_TRUE = '!';
 	private final char LET_FALSE = 'X';
 	private final String NO_CORR_ATT = "Некорректная попытка";
@@ -16,23 +8,18 @@ public class Service {
 	private final int MAXATTEMPTS = 6;
 	private final int DEFAULT_CNT = 1;
 	private final String NO_EXISTS = "Неизвестное слово";
-	private List<String> wordsAttempts = new ArrayList<>();
-	
-	public void addWordsAttempts(Attempt attempt, AttemptResoult attemptResoult){
-		wordsAttempts.add(attempt.getAttempt());
-		wordsAttempts.add(attemptResoult.getAttemptResoult());
-	}
-	
-	public boolean contin(){
-		return cnt<=MAXATTEMPTS;
-	}
+    private Infra dict;
 
-    public Service(DictSecretWords dictSecretWords) {
-        this.dictSecretWords = dictSecretWords;
+    public Service(Infra dict){
+        this.dict = dict;
     }
 
+	public boolean contin(Game game){
+		return game.getCnt()<=MAXATTEMPTS;
+	}
+
     public String getHiddenWord() {
-		return dictSecretWords.getHiddenWord();
+		return dict.getHiddenWord();
     }
 
     public char[] checkAttempt(String hiddenWord, Attempt attempt) {
@@ -43,7 +30,7 @@ public class Service {
             if (currentChar == hiddenWord.charAt(i)) {
                 result[i] = currentChar;
             } else if (hiddenWord.contains(String.valueOf(currentChar))) {
-                result[i] = LET_TRUE; 
+                result[i] = LET_TRUE;
             } else {
                 result[i] = LET_FALSE;
             }
@@ -55,31 +42,20 @@ public class Service {
         return hiddenWord.equals(extAtt);
     }
 
-    public AttemptResoult attemptResoult(String hiddenWord, Attempt attempt) {
+    public AttemptResoult attemptResoult(String hiddenWord, Attempt attempt, Game game) {
+        AttemptResoult attemptResoult;
         if (!attempt.validAttempt()) {
-            return new AttemptResoult(Code.valueOf("ERR_ATTEMPT"), NO_CORR_ATT);
+            attemptResoult = new AttemptResoult(Code.ERR_ATTEMPT, NO_CORR_ATT,game.getCnt());
         } else if (isTrueWord(hiddenWord, attempt.getAttempt())) {
-            return new AttemptResoult(Code.valueOf("WIN_ATTEMPT"), WIN_ATT);
-        } else if(!dictSecretWords.wordExists(attempt.getAttempt())){
-			return new AttemptResoult(Code.valueOf("NO_EX_WORD"), NO_EXISTS);
+            attemptResoult = new AttemptResoult(Code.WIN_ATTEMPT, WIN_ATT,game.getCnt());
+        } else if(!dict.wordExists(attempt.getAttempt())){
+            attemptResoult = new AttemptResoult(Code.NO_EX_WORD, NO_EXISTS,game.getCnt());
 		} else {
-            return new AttemptResoult(Code.valueOf("COR_ATTEMPT"), new String(checkAttempt(hiddenWord, attempt)));
+            attemptResoult = new AttemptResoult(Code.COR_ATTEMPT, new String(checkAttempt(hiddenWord, attempt)),game.getCnt());
+            int cnt = game.getCnt();
+            game.setCnt(++cnt);
         }
+        game.addResList(attemptResoult);
+        return attemptResoult;
     }
-	
-	public void cntAttempt(Code code){
-		if(code.equals(Code.valueOf("ERR_ATTEMPT"))||code.equals(Code.valueOf("NO_EX_WORD"))){
-			cnt=cnt;
-		}else if(code.equals(Code.valueOf("WIN_ATTEMPT"))){
-			cnt = DEFAULT_CNT;
-		}else if(code.equals(Code.valueOf("COR_ATTEMPT"))){
-			cnt++;
-		}else{
-			cnt = DEFAULT_CNT;
-		}
-	}
-	
-	public int getCnt(){
-		return cnt;
-	}
 }
