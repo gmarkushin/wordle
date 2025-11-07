@@ -1,5 +1,8 @@
-package api;
+package api.env;
 
+import org.springframework.stereotype.Component;
+
+@Component
 public class Message {
 	public static final String HELLO = "Да начнётся игра!!! \n Вот пару правил: \n Cлова из 5 букв \n 6 попыток \n Если буква верная и на своём месте, она там и останется \n Если буква нужная, но не на своём месте, вместо буквы будет ! \n Если буквы нет буде Х \n Вводи только строчные буквы. \n \n Начинаем?(да/нет)";
 	public static final String FIVELETTER = "В слове должно быть пять букв!";

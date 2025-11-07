@@ -1,4 +1,4 @@
-package domain;
+package domain.service;
 
 public enum Code {
 	ERR_ATTEMPT ("406"),

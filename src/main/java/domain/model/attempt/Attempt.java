@@ -1,4 +1,4 @@
-package domain;
+package domain.model.attempt;
 
 public class Attempt {
     public String attempt;

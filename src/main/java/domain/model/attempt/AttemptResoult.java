@@ -1,16 +1,18 @@
-package domain;
+package domain.model.attempt;
 
-import domain.Code;
+import domain.service.Code;
 
 public class AttemptResoult {
+    Attempt attempt;
     Code statusCode;
     String resultAttempt;
     int cnt;
 
-    public AttemptResoult(Code code, String attempt, int cnt) {
+    public AttemptResoult(Code code, String resultAttempt, int cnt, Attempt attempt) {
         this.statusCode = code;
-        this.resultAttempt = attempt;
+        this.resultAttempt = resultAttempt;
         this.cnt = cnt;
+        this.attempt = attempt;
     }
 
     public Code getStatusCode() {
