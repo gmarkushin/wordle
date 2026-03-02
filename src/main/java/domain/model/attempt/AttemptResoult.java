@@ -3,10 +3,10 @@ package domain.model.attempt;
 import domain.service.Code;
 
 public class AttemptResoult {
-    Attempt attempt;
-    Code statusCode;
-    String resultAttempt;
-    int cnt;
+    private Attempt attempt;
+    private Code statusCode;
+    private String resultAttempt;
+    private int cnt;
 
     public AttemptResoult(Code code, String resultAttempt, int cnt, Attempt attempt) {
         this.statusCode = code;
@@ -14,6 +14,7 @@ public class AttemptResoult {
         this.cnt = cnt;
         this.attempt = attempt;
     }
+    public Attempt getAttempt(){return attempt;}
 
     public Code getStatusCode() {
         return statusCode;
@@ -22,4 +23,6 @@ public class AttemptResoult {
     public String getAttemptResoult() {
         return resultAttempt;
     }
+
+    public int getCnt(){return cnt;}
 }
